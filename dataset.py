@@ -5,8 +5,10 @@ from torch.utils.data import (
     Dataset, DataLoader as DataLoaderBase
 )
 
+import audioread
 from librosa.core import load
 from natsort import natsorted
+import scipy
 
 from os import listdir
 from os.path import join
@@ -26,7 +28,13 @@ class FolderDataset(Dataset):
         ]
 
     def __getitem__(self, index):
-        (seq, _) = load(self.file_names[index], sr=None, mono=True)
+        # Try to load using librosa
+        try:
+            (seq, _) = load(self.file_names[index], sr=None, mono=True)
+        except audioread.NoBackendError:
+            # Use scipy if librosa didn't work
+            _, seq = scipy.io.wavfile.read(self.file_names[index])
+
         return torch.cat([
             torch.LongTensor(self.overlap_len) \
                  .fill_(utils.q_zero(self.q_levels)),
