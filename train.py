@@ -327,7 +327,8 @@ if __name__ == '__main__':
     parser.add_argument(
         '--results_path', help='path to the directory to save the results to'
     )
-    parser.add_argument('--learning_rate', help='learning rate for training')
+    parser.add_argument('--learning_rate', type=float,
+                        help='learning rate for training')
     parser.add_argument('--epoch_limit', help='how many epochs to run')
     parser.add_argument(
         '--resume', type=parse_bool, default=True,
