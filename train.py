@@ -44,6 +44,7 @@ default_params = {
     'keep_old_checkpoints': False,
     'datasets_path': 'datasets',
     'results_path': 'results',
+    'learning_rate': 0.001,
     'epoch_limit': 1000,
     'resume': True,
     'sample_rate': 16000,
@@ -184,7 +185,8 @@ def main(exp, frame_sizes, dataset, **params):
         model = model.cuda()
         predictor = predictor.cuda()
 
-    optimizer = gradient_clipping(torch.optim.Adam(predictor.parameters()))
+    optimizer = gradient_clipping(torch.optim.Adam(predictor.parameters(),
+                                                   lr=params['learning_rate']))
 
     data_loader = make_data_loader(model.lookback, params)
     test_split = 1 - params['test_frac']
@@ -325,6 +327,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '--results_path', help='path to the directory to save the results to'
     )
+    parser.add_argument('--learning_rate', help='learning rate for training')
     parser.add_argument('--epoch_limit', help='how many epochs to run')
     parser.add_argument(
         '--resume', type=parse_bool, default=True,
